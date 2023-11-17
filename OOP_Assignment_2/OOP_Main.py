@@ -69,7 +69,7 @@ class Alchemist:
             boost = potion.calculateBoost()
             stat = potion.getStat()
             
-            # Applies the bonus only to the stat where it makes sence
+            # Applies the bonus only to the stat where it makes sense
             if stat == "attack":
                 self.__attack += boost
             elif stat == "strength":
@@ -151,8 +151,10 @@ class Laboratory:
     def addReagent(self, reagent_name, potency, quality=None):
         """Adds a new reagent to the laboratory."""
         if quality is not None:
+            # Create a Catalyst object and add it to the list of reagents
             reagent = Catalyst(quality, reagent_name, potency)
         else:
+            # Create a Herb object and add it to the list of reagents
             reagent = Herb(reagent_name, potency)
         
         self.__reagents.append(reagent)
@@ -192,11 +194,16 @@ class SuperPotion(Potion):
         
     def calculateBoost(self, herbPotency, catalystPotency, catalystQuality):
         """Calculates boost based off formula in Documentation"""
+        # Get the potency values of the herb and catalyst
         herbPotency = self.__herb.getPotency()
         catalystPotency = self.__catalyst.getPotency()
+
+        # Get the quality value of the catalyst
         catalystQuality = self.__catalyst.getQuality()
 
+        # Calculate the boost based on the formula
         boost = herbPotency + (catalystPotency * catalystQuality) * 1.5
+        # Round the result by two decimals
         return round(boost, 2)
     
     @property
@@ -215,10 +222,13 @@ class ExtremePotion(Potion):
         
     def calculateBoost(self):
         """Calculates boost based off formula in Documentation"""
-        if isinstance(self.__potion, SuperPotion):  # Check if it's a SuperPotion
-            super_potion_boost = self.__potion.calculateBoost()  # Get boost value of the SuperPotion
+        # Check if it's a SuperPotion
+        if isinstance(self.__potion, SuperPotion):  
+            # Get boost value of the SuperPotion
+            super_potion_boost = self.__potion.calculateBoost()  
             boost = (self.__reagent.getPotency() * super_potion_boost) * 3.0
-            return round(boost, 2)  # Round the result by two decimals
+            # Round the result by two decimals
+            return round(boost, 2)  
         else:
             return 0  # Return 0 if it's not a valid SuperPotion
     
