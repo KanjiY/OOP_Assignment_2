@@ -7,25 +7,18 @@ EmailID: kenay030
 This is my own work as defined by the University's Academic Misconduct Policy.
 '''
 
+# Github Repository
+# https://github.com/KanjiY/OOP_Assignment_2.git
+
+
 from abc import ABC, abstractclassmethod
 
 
 class Alchemist:
-    # The attributes in Alchemist from attack to necromancy are values between 0 and 100 which indicate the
-    # strength of that attribute. An alchemist knows the following recipes that can create two types of potions,
-    # super potions and extreme potions. The recipe of a super potions consists of a herb and a catalyst. The
-    # recipe of an extreme potion consists of a herb or catalyst and a super potion:
-
-    # The alchemist knows the recipe but the recipes are stores in the labratory
-    # An alchemist can mix a potion and will make use of the functionality in a laboratory for it.
-    # If an alchemist drinks a potion then it will increase their attack, strength, defence, magic, range, or
-    # necromancy depending on what the potion’s status is.
-    # When an alchemist collects a reagent then they will add it to its laboratory.
-    # Refining reagents means that an alchemist will refine all herbs and catalysts in the laboratory
+    
     def __init__(self, attack, strength, defence, magic, ranged, necromancy, labratory):
         self.__attack = attack
         self.__strength = strength
-        self.__defence = defence
         self.__defence = defence
         self.__magic = magic
         self.__ranged = ranged
@@ -45,6 +38,7 @@ class Alchemist:
                         "Extreme Necromancy: Ground Miasma Rune, Super Necromancy"}
     
     def mixPotions(self, ingredient1, ingredient2):
+        # Sets the recipies of all the potions and their ingredients
         recipes = {
             ("Irit", "Eye of Newt"): "New - Super Attack Potion created",
             ("Kwuarm", "Limpwurt Root"): "New - Super Strength Potion created",
@@ -60,6 +54,7 @@ class Alchemist:
             ("Ground Miasma Rune", "Super Necromancy"): "New - Extreme Necromancy Potion created"
         }
 
+        # tries to crate the potions with the ingredients in both orders then returns the relevent message
         potion = recipes.get((ingredient1, ingredient2))
         if potion is None:
             potion = recipes.get((ingredient2, ingredient1))
@@ -68,20 +63,21 @@ class Alchemist:
         
     def drinkPotion(self, potion):
         if isinstance(potion, SuperPotion):
-            # Calculate boost for SuperPotion
-            boost = potion.calculateBoost()
+            herb_potency = potion.getHerb().getPotency()
+            catalyst_potency = potion.getCatalyst().getPotency()
+            catalyst_quality = potion.getCatalyst().getQuality()
 
-            # Update attributes based on boost
+            boost = herb_potency + (catalyst_potency * catalyst_quality) * 1.5
             self.__attack += boost
             self.__strength += boost
             # ... Update other attributes based on potion type
-            return f"Drank SuperPotion, attributes boosted by {boost}"
+            return f"Drank ", SuperPotion ,", attributes boosted by {boost}"
         
         elif isinstance(potion, ExtremePotion):
-            # Calculate boost for ExtremePotion
-            boost = potion.calculateBoost()
+            reagent_potency = potion.getReagent().getPotency()
+            super_potion_boost = potion.getPotion().calculateBoost()
 
-            # Update attributes based on boost
+            boost = (reagent_potency * super_potion_boost) * 3.0
             self.__attack += boost
             self.__strength += boost
             # ... Update other attributes based on potion type
@@ -111,13 +107,7 @@ class Alchemist:
 
 
 class Laboratory:
-    # The laboratory stores the potions, herbs, and catalysts.
-    # It provides functionality for an alchemist to mix potions: Each potion that is mixed has a name and its first
-    # ingredient is either a herb or a catalyst that is stored in the laboratory. The second ingredient is either a
-    # catalyst or another potion. Depending on the potion type, the proper potion must be created. Which
-    # attribute of an alchemist the potion is increasing is specified in the status of the potions.
-    # Reagents can be added to the laboratory. To keep it simple, this functionality specifies the amount of
-    # reagents being available in the laboratory.
+    
     def __init__(self):
         self.__potions = []
         self.__herbs = []
@@ -200,9 +190,6 @@ class ExtremePotion(Potion):
         self.__potion = potion
         
     def calculateBoost(self):
-        #(potency of its reagent * boost value of its super potion) * 3.0. The result should be
-        # rounded by two decimals
-        
         # Calculate boost for Extreme Potion
         if isinstance(self.__potion, SuperPotion):  # Check if it's a SuperPotion
             super_potion_boost = self.__potion.calculateBoost()  # Get boost value of the SuperPotion
@@ -248,8 +235,6 @@ class Herb(Reagent):
         self.__grimy = True
         
     def refine(self):
-        # : Refining leads to a herb that is not grimy and will multiply its existing potency by 2.5. It will
-        # print this information on the screen as well
         if self.__grimy:
             self.__grimy = False
             self.setPotency(self.getPotency() * 2.5)
@@ -271,9 +256,6 @@ class Catalyst(Reagent):
         self.__quality = quality
     
     def refine(self):
-        # If the quality of the catalyst is below 8.9 then its quality will be increased by 1.1 and this
-        # information is printed on the screen. If its quality is equal or above 8.9 then its quality is set to 10.
-        # It should print on the screen the quality and say that “it cannot be refined any further”.
         if self.__quality < 8.9:
             self.__quality += 1.1
             print(f"Quality of {self.getName()} increased to {self.__quality}.")
@@ -284,21 +266,3 @@ class Catalyst(Reagent):
     @property
     def getQuality(self):
         return self.__quality
-    
-    
-    
-# self.__potions = ["Super Attack", "Super Strength", "Super Defence", "Super Magic", "Super Ranging", "Super Necromancy",
-#                     "Extreme Attack", "Extreme Strength", "Extreme Defence", "Extreme Magic", "Extreme Ranging", "Extreme Necrmancy"]
-# self.__herbs = ["Arbuck", "Avantoe", "Cadantine", "Dwarf Weed", "Ifrit", "Kwuarm", "Lantadyme", "Torstol"]
-# self.__catalysts = ["Eye of Newt", "Limpwurt Root", "White Berries", "Potato Cactus", "Wine of Zamorak", 
-#                     "Blood of Orcus", "Ground Mud Rune", "Grenwall Spike", "Ground Miasma Rune"]
-
-
-
-lab = Laboratory
-alchemist =  Alchemist(50, 50, 50, 50, 50, 50, lab)
-
-newPotion = alchemist.mixPotions("Eye of Newt", "Irit")
-print(newPotion)
-
-drankThePotion = alchemist.drinkPotion("Super")
